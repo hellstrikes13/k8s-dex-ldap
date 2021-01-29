@@ -1,0 +1,31 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: keycloak-proxy
+  namespace: auth
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: keycloak-proxy
+      annotations:
+        repository: https://github.com/gambol99/keycloak-proxy
+    spec:
+      containers:
+      - name: proxy
+        image: quay.io/gambol99/keycloak-proxy:latest
+        imagePullPolicy: Always
+        args:
+          - --listen=:80
+          - --upstream-url=https://kubernetes-dashboard.kube-system
+          - --discovery-url=https://dex.k8s.example.org:32000/dex
+          - --client-id=loginapp
+          - --skip-upstream-tls-verify
+          - --redirection-url=https://dex.k8s.example.org
+#          - --secure-cookie=false
+          - --client-secret=4TORGiNV9M54BTk1v7dNuFSaI6hUjfjr
+          - --scopes=groups 
+          - --enable-authorization-header
+#          - --skip-openid-provider-tls-verify
+          - --resources=uri=/*

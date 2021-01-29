@@ -1,0 +1,72 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: dex
+  namespace: auth
+data:
+  config.yaml: |
+    issuer: https://dex.example.org:32000
+    storage:
+      type: kubernetes
+      config:
+        inCluster: true
+    web:
+      https: 0.0.0.0:5556
+      tlsCert: /etc/dex/tls/tls.crt
+      tlsKey: /etc/dex/tls/tls.key
+    logger:
+      level: "debug"
+      format: json
+
+    connectors:
+      - type: ldap
+        id: ldap
+        name: LDAP
+        config:
+          host: ldap.k8s.example.org:389
+          insecureNoSSL: true
+          insecureSkipVerify: true
+          bindDN: cn=admin,dc=mycompany,dc=com
+          bindPW: adminpassword
+
+          # User search maps a username and password entered by a user to a LDAP entry.
+          userSearch:
+            # BaseDN to start the search from. It will translate to the query
+            # "(&(objectClass=person)(uid=<username>))".
+            baseDN: ou=users,dc=mycompany,dc=com
+            # Optional filter to apply when searching the directory.
+            filter: "(objectClass=inetOrgPerson)"
+            # username attribute used for comparing user entries. This will be translated
+            # and combine with the other filter as "(<attr>=<username>)".
+            username: uid
+            # The following three fields are direct mappings of attributes on the user entry.
+            # String representation of the user.
+            idAttr: uid
+            # Required. Attribute to map to Email.
+            emailAttr: mail
+            # Maps to display name of users. No default value.
+            nameAttr: cn
+
+          # Group search queries for groups given a user entry.
+          groupSearch:
+            # BaseDN to start the search from. It will translate to the query
+            # "(&(objectClass=group)(member=<user uid>))".
+            baseDN: ou=groups,dc=mycompany,dc=com
+            # Optional filter to apply when searching the directory.
+            filter: "(objectClass=groupOfNames)"
+            # Following two fields are used to match a user to a group. It adds an additional
+            # requirement to the filter that an attribute in the group must match the user's
+            # attribute value.
+            userAttr: DN
+            groupAttr: member
+            # Represents group name.
+            nameAttr: cn
+    oauth2:
+      skipApprovalScreen: true
+
+    staticClients:
+    - id: loginapp
+      redirectURIs:
+      - 'https://login.k8s.example.org:32002/callback'
+      name: 'loginapp'
+      secret: OIDCAPPSECRET123

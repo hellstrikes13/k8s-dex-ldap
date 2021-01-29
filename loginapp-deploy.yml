@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loginapp
+  namespace: auth
+  labels:
+    app: loginapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loginapp
+  template:
+    metadata:
+      labels:
+        app: loginapp
+    spec:
+      containers:
+      - image: quay.io/fydrah/loginapp:v3.2.1
+        command: ["/loginapp","serve","-c","/app/config.yaml"]
+        name: loginapp
+        ports:
+        - name: http
+          containerPort: 5555
+        volumeMounts:
+        - name: ca
+          mountPath: /etc/kubernetes/ssl/
+        - name: config
+          mountPath: /app/
+        - name: tls
+          mountPath: /etc/loginapp/tls
+      volumes:
+      - name: ca
+        configMap:
+          name: ca
+          items:
+          - key: ca.pem
+            path: ca.pem
+      - name: config
+        configMap:
+          name: loginapp
+          items:
+          - key: config.yaml
+            path: config.yaml
+      - name: tls
+        secret:
+          secretName: login.k8s.example.org.tls

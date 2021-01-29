@@ -1,0 +1,55 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loginapp
+  namespace: auth
+data:
+  config.yaml: |
+    name: "loginapp"
+    secret: LOGINAPPSECRET123
+    listen: "0.0.0.0:5555"
+    oidc:
+      client:
+        id: "loginapp"
+        secret: OIDCAPPSECRET123
+        redirectURL: "https://login.k8s.example.org:32002/callback"
+      issuer:
+        rootCA: "/etc/kubernetes/ssl/ca.pem"
+        url: "https://dex.example.org:32000"
+        insecureSkipVerify: false
+    scopes: ["openid","profile","email","groups"]
+    tls:
+      enabled: true
+      cert: "/etc/loginapp/tls/tls.crt"
+      key: "/etc/loginapp/tls/tls.key"
+    web:
+      mainClientID: loginapp
+      mainUsernameClaim: name
+      kubeconfig:
+        defaultcluster: kubernetes
+        defaultNamespace: auth
+    metrics:
+      port: 9090
+    clusters:
+      - name: kubernetes
+        server: https://10.0.2.15:6443
+        certificate-authority: | 
+          -----BEGIN CERTIFICATE-----
+          MIIC5zCCAc+gAwIBAgIBADANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDEwprdWJl
+          cm5ldGVzMB4XDTIxMDEyMTE4NTQxMloXDTMxMDExOTE4NTQxMlowFTETMBEGA1UE
+          AxMKa3ViZXJuZXRlczCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAN9X
+          jYIRvyjfXGrGAkm7OL7S61K4vgg+eRm4frZDCnwCBbqg5CxWVK/ROmigIp/78jtA
+          3phu9eWW4DEtST1p+dyN6YG6OB0fHg8qXvPV3dETRpmr/rrxgCFcx3xF1i2GdVsc
+          ObUcl0M6GqAUULOGTeq1wpObpVnPuJ5onZfkqzb3jocknM4NuDSgPc8ITW46N/4N
+          qTfDy3mAYREkIBRb4W2xZIY2IESajoUTo0zOt2Eb568foe2QhIUW0VK6246AnwS4
+          qr4uJnQytiK+bI5UD80xe742LdwdC7vjJXQzIHmYhrBilhm7MkLqR3xziIkrbhBa
+          M04zYd7WZ6fpCeitersCAwEAAaNCMEAwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB
+          /wQFMAMBAf8wHQYDVR0OBBYEFH98LzjVY9lVL1AyrBh9fUn9vs77MA0GCSqGSIb3
+          DQEBCwUAA4IBAQCD5GI8xscWpIbzDet9WOGJ9r86UvzJPKEi9qdUJk4llWD2yA4P
+          jia4l1aI+bMPpl7SQGLZ57Jr2QCPLJ8HD3/z0Nl1HAgKnY1g5P3g+HBwCtA4D0nF
+          qIXqi0K/+R7UtHa97vTAilHRYPecczG5wiDDQ3Vis9NdBKPtbDQ8kVsvp7zJncVm
+          7CZtL7oKQJ7kzvBZ7JDYHW/q+OOt7enWTcRypARpFza3nzTjL9j0d93A5D/oiija
+          NK/+l20sDlOTWUZJifDlmu0B/QEx1rKCRsEY9wY4gYEhDfvLv4z6LdGcWbniShYZ
+          ptCJyvNE9DFBXv62kxO+esmwZub1v+9Kj2RX
+          -----END CERTIFICATE-----
