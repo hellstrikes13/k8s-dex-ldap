@@ -124,7 +124,7 @@ member: uid=brawan,ou=users,dc=mycompany,dc=com
 member: uid=mahwan,ou=users,dc=mycompany,dc=com
 ou: groups
 
-for i i in ouusers.ldif ougroups.ldif devops_user.ldif dev_user.ldif  devops_group.ldif dev_group.ldif
+for i in ouusers.ldif ougroups.ldif devops_user.ldif dev_user.ldif  devops_group.ldif dev_group.ldif
 do
  ldapadd -H ldap://127.0.0.1  -x -D cn=admin,dc=mycompany,dc=com -w adminpassword -f $i
 done
