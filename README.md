@@ -153,7 +153,7 @@ ldapsearch -LLL -H ldap://127.0.0.1   -x -D cn=admin,dc=mycompany,dc=com -w admi
   * **ldap.k8s.example.org --> Ldap server without TLS
 
 
-* once Kubernetes cluster is up append following entries /etc/kubernetes/manifest/kube-api-server.yaml
+* once Kubernetes cluster is up append following entries /etc/kubernetes/manifest/kube-apiserver.yaml
   * RBAC enabled
   * OIDC authentication enabled. API server configuration:
     * **--oidc-issuer-url=https://dex.example.org:32000 ( External Dex endpoint)
@@ -201,6 +201,7 @@ kubectl create ns auth
 
 ```shell
 #this shall generate self signed certs under /etc/kubernetes/ssl you may edit the script as per your needs)
+openssl rand -out /root/.rnd -hex 256
 ./gencert.sh
 kubectl create secret tls login.k8s.example.org.tls --cert=/etc/kubernetes/ssl/cert.pem --key=/etc/kubernetes/ssl/key.pem -n auth
 kubectl create secret tls dex.example.org.tls --cert=/etc/kubernetes/ssl/cert.pem --key=/etc/kubernetes/ssl/key.pem -n auth
