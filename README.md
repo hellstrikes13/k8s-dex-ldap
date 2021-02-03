@@ -138,6 +138,7 @@ ldapsearch -LLL -H ldap://127.0.0.1   -x -D cn=admin,dc=mycompany,dc=com -w admi
   edit coredns configmap append following entry
 
 ```shell
+ kubectl edit cm coredns -n kube-system
  hosts custom.hosts example.org {
       10.0.2.15 ldap.k8s.example.org dex.example.org login.k8s.example.org
       fallthrough
